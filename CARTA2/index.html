@@ -37,6 +37,30 @@
 
     <canvas id="mazeCanvas"></canvas>
 
+    <div id="controls">
+
+    <button class="control-btn" id="upBtn">
+        ▲
+    </button>
+
+    <div class="middle-controls">
+
+        <button class="control-btn" id="leftBtn">
+            ◀
+        </button>
+
+        <button class="control-btn" id="rightBtn">
+            ▶
+        </button>
+
+    </div>
+
+    <button class="control-btn" id="downBtn">
+        ▼
+    </button>
+
+</div>
+
 </section>
 
 <!-- MEMÓRIA DESBLOQUEADA -->
@@ -68,7 +92,7 @@
     </p>
 
     <button id="finishBtn">
-        Ver Conquista
+        Fim!
     </button>
 
 </section>
@@ -82,10 +106,21 @@
     <h2>
         Você encontrou todas as Chaves do Meu Coração ❤️
     </h2>
+    
+    <button onclick="document.getElementById('bgMusic').play()">
+    🎵 Tocar Música
+</button>
 
 </section>
 
 <script src="script.js"></script>
+<audio id="bgMusic" loop>
+
+    <source
+    src="audio/musica.mp3"
+    type="audio/mpeg">
+
+</audio>
 
 </body>
 </html>
