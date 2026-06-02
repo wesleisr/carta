@@ -13,7 +13,7 @@ document.getElementById("finalScreen");
 const victoryScreen =
 document.getElementById("victoryScreen");
 
-let currentPhase = 1;
+let currentPhase = 14;
 
 let touchStartX = 0;
 let touchStartY = 0;
@@ -126,11 +126,21 @@ canvas.getContext("2d");
 let SIZE = 9;
 
 const mazeSizes = [
-
-9, 9, 11, 11, 13,
-13, 15, 15, 17, 17,
-19, 19, 21, 21, 23
-
+9,
+11,
+13,
+15,
+17,
+19,
+21,
+23,
+25,
+27,
+29,
+31,
+33,
+35,
+35
 ];
 
 let maze = [];
@@ -140,10 +150,9 @@ let player = {
     y:1
 };
 
-let exit = {
-    x:SIZE-2,
-    y:SIZE-2
-};
+let hearts = [];
+
+let collectedHearts = 0;
 
 function generateMaze(){
 
@@ -161,6 +170,28 @@ function generateMaze(){
     }
 
     carve(1,1);
+
+}
+
+function addLoops(amount){
+
+    for(let i=0;i<amount;i++){
+
+        let x;
+        let y;
+
+        do{
+
+            x = Math.floor(Math.random()*(SIZE-2))+1;
+            y = Math.floor(Math.random()*(SIZE-2))+1;
+
+        }while(
+            maze[y][x] === 0
+        );
+
+        maze[y][x] = 0;
+
+    }
 
 }
 
@@ -203,7 +234,27 @@ function carve(x,y){
         }
     }
 }
+function getRandomPathCell(){
 
+    let x;
+    let y;
+
+    do{
+
+        x = Math.floor(Math.random() * SIZE);
+        y = Math.floor(Math.random() * SIZE);
+
+    }while(
+
+        maze[y][x] !== 0 ||
+
+        (x === 1 && y === 1)
+
+    );
+
+    return {x,y};
+
+}
 function drawMaze(){
 
     canvas.width = 500;
@@ -241,25 +292,26 @@ function drawMaze(){
         }
     }
 
+
     /* saída */
 
-    ctx.fillStyle = "#00ff66";
+    hearts.forEach(heart=>{
 
-    ctx.beginPath();
+    if(!heart.collected){
 
-    ctx.arc(
+        ctx.font = `${cell * 0.65}px Arial`;
 
-        exit.x*cell + cell/2,
-        exit.y*cell + cell/2,
+        ctx.fillText(
+            "🔑",
+            heart.x * cell + cell * 0.18,
+            heart.y * cell + cell * 0.78
+        );
 
-        cell/3,
+    }
 
-        0,
-        Math.PI*2
+});
 
-    );
 
-    ctx.fill();
 
     /* jogador */
 
@@ -282,27 +334,192 @@ function drawMaze(){
     ctx.fill();
 
 }
+function getRandomPathCellInArea(
+    minX,
+    maxX,
+    minY,
+    maxY
+){
 
+    let x;
+    let y;
+
+    do{
+
+        x = Math.floor(
+            Math.random() *
+            (maxX - minX + 1)
+        ) + minX;
+
+        y = Math.floor(
+            Math.random() *
+            (maxY - minY + 1)
+        ) + minY;
+
+    }while(
+
+        maze[y][x] !== 0 ||
+
+        (x === 1 && y === 1)
+
+    );
+
+    return {x,y};
+
+}
+function getFarthestCells(){
+
+    const visited = [];
+
+    for(let y=0;y<SIZE;y++){
+
+        visited[y] = [];
+
+        for(let x=0;x<SIZE;x++){
+
+            visited[y][x] = -1;
+
+        }
+    }
+
+    const queue = [];
+
+    queue.push({x:1,y:1});
+
+    visited[1][1] = 0;
+
+    while(queue.length){
+
+        const current = queue.shift();
+
+        const directions = [
+
+            [0,-1],
+            [1,0],
+            [0,1],
+            [-1,0]
+
+        ];
+
+        for(const [dx,dy] of directions){
+
+            const nx = current.x + dx;
+            const ny = current.y + dy;
+
+            if(
+
+                nx >= 0 &&
+                ny >= 0 &&
+                nx < SIZE &&
+                ny < SIZE &&
+
+                maze[ny][nx] === 0 &&
+
+                visited[ny][nx] === -1
+
+            ){
+
+                visited[ny][nx] =
+                visited[current.y][current.x] + 1;
+
+                queue.push({
+                    x:nx,
+                    y:ny
+                });
+
+            }
+
+        }
+
+    }
+
+    const cells = [];
+
+    for(let y=0;y<SIZE;y++){
+
+        for(let x=0;x<SIZE;x++){
+
+            if(
+
+                maze[y][x] === 0 &&
+
+                !(x === 1 && y === 1)
+
+            ){
+
+                cells.push({
+
+                    x,
+                    y,
+
+                    distance:
+                    visited[y][x]
+
+                });
+
+            }
+
+        }
+
+    }
+
+    cells.sort(
+        (a,b)=>
+        b.distance - a.distance
+    );
+
+    return cells;
+
+}
 function loadMaze(){
-
-    SIZE = mazeSizes[currentPhase - 1];
-
-    document
-.getElementById("controls")
-.style.display = "flex";
 
     document.getElementById(
         "phaseInfo"
     ).innerText =
     `FASE ${currentPhase} / 15`;
 
+    SIZE = mazeSizes[
+        currentPhase - 1
+    ];
+
     generateMaze();
+    addLoops(
+    Math.floor(SIZE * 1.5)
+    );
 
     player.x = 1;
     player.y = 1;
 
-    exit.x = SIZE-2;
-    exit.y = SIZE-2;
+    const farthest =
+    getFarthestCells();
+
+    hearts = [
+
+        {
+            x:farthest[0].x,
+            y:farthest[0].y,
+            collected:false
+        },
+
+        {
+            x:farthest[
+                Math.floor(
+                    farthest.length * 0.3
+                )
+            ].x,
+
+            y:farthest[
+                Math.floor(
+                    farthest.length * 0.3
+                )
+            ].y,
+
+            collected:false
+        }
+
+    ];
+
+    collectedHearts = 0;
 
     drawMaze();
 
@@ -430,12 +647,29 @@ function handleTouchEnd(event){
 
 function checkWin(){
 
-    if(
+    hearts.forEach(heart => {
 
-        player.x === exit.x &&
-        player.y === exit.y
+        if(
 
-    ){
+            !heart.collected &&
+
+            player.x === heart.x &&
+
+            player.y === heart.y
+
+        ){
+
+            heart.collected = true;
+
+            collectedHearts++;
+
+        }
+
+    });
+
+    drawMaze();
+
+    if(collectedHearts >= 2){
 
         unlockMemory();
 
