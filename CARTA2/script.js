@@ -13,7 +13,7 @@ document.getElementById("finalScreen");
 const victoryScreen =
 document.getElementById("victoryScreen");
 
-let currentPhase = 1;
+let currentPhase = 15;
 
 let touchStartX = 0;
 let touchStartY = 0;
@@ -25,78 +25,78 @@ const SWIPE_MIN_DISTANCE = 30;
 const memories = [
 
 {
-title:"FOTO 1",
-text:"EDITAR MEMÓRIA 1"
+title:"Natal 2021",
+text:"Essa é a nossa primeira foto, né? Engraçado como a maioria das fotos que temos são parecidas com essa... é a nossa marca registrada? Acho que é a minha pelo menos."
 },
 
 {
-title:"FOTO 2",
-text:"EDITAR MEMÓRIA 2"
+title:"Maio 2022",
+text:"Tem uma foto desse dia em que estamos nós dois e mais três pessoas. Você lembra quem eram elas?"
 },
 
 {
-title:"FOTO 3",
-text:"EDITAR MEMÓRIA 3"
+title:"Dia dos Namorados 2022",
+text:"Nosso primeiro Dia dos Namorados!"
 },
 
 {
-title:"FOTO 4",
-text:"EDITAR MEMÓRIA 4"
+title:"Julho 2022",
+text:"Uma viagem, um hotel. Fazer esse treco me fez perceber que a minha memoria é pior do que parece 🤔"
 },
 
 {
-title:"FOTO 5",
-text:"EDITAR MEMÓRIA 5"
+title:"Ainda Julho (de acordo com o google",
+text:"De quem era essa festa de aniversário?"
 },
 
 {
-title:"FOTO 6",
-text:"EDITAR MEMÓRIA 6"
+title:"Setembro 2022",
+text:"Comemorando o seu aniversário em Arraial"
 },
 
 {
-title:"FOTO 7",
-text:"EDITAR MEMÓRIA 7"
+title:"Outubro 2022",
+text:"Provavelmente no central park"
 },
 
 {
-title:"FOTO 8",
-text:"EDITAR MEMÓRIA 8"
+title:"Outubro 2022",
+text:"Nosso ritual do dia 19... prometo retomar quando as coisas melhorarem"
 },
 
 {
-title:"FOTO 9",
-text:"EDITAR MEMÓRIA 9"
+title:"Dezembro 2022",
+text:"Floresta dos Lagos, lembro de muitos mosquitos e de uma cachoeira bem decepcionante. fora isso foi legal."
 },
 
 {
-title:"FOTO 10",
-text:"EDITAR MEMÓRIA 10"
+title:"Fevereiro 2023",
+text:"Isso foi em caraíva? a gente tem que visitar lá de noite para ver se é bom"
 },
 
 {
-title:"FOTO 11",
-text:"EDITAR MEMÓRIA 11"
+title:"Junho 2023",
+text:"Um sushi em Trancoso."
 },
 
 {
-title:"FOTO 12",
-text:"EDITAR MEMÓRIA 12"
+title:"Julho 2023",
+text:"Provavelmente um dia 19"
 },
 
 {
-title:"FOTO 13",
-text:"EDITAR MEMÓRIA 13"
+title:"Agosto 2023",
+text:"Aniversário da Lara! O melhor desse dia foi a banheira de hidromassagem."
 },
 
 {
-title:"FOTO 14",
-text:"EDITAR MEMÓRIA 14"
+title:"Junho 2024",
+text:"Outro hotel, outra aventura, outro lugar que eu não lembro onde é 😂."
 },
 
 {
-title:"FOTO 15",
-text:"EDITAR MEMÓRIA 15"
+title:"Dezembro 2025",
+text:"Do primeiro ao mais recente, o melhor presente de todos é ter você comigo em todos os natais."
 }
 
 ];
@@ -123,7 +123,15 @@ document.getElementById("mazeCanvas");
 let ctx =
 canvas.getContext("2d");
 
-const SIZE = 21;
+let SIZE = 9;
+
+const mazeSizes = [
+
+9, 9, 11, 11, 13,
+13, 15, 15, 17, 17,
+19, 19, 21, 21, 23
+
+];
 
 let maze = [];
 
@@ -277,6 +285,12 @@ function drawMaze(){
 
 function loadMaze(){
 
+    SIZE = mazeSizes[currentPhase - 1];
+
+    document
+.getElementById("controls")
+.style.display = "flex";
+
     document.getElementById(
         "phaseInfo"
     ).innerText =
@@ -315,33 +329,24 @@ document.addEventListener(
 
 function moveDirection(dx,dy){
 
-    const nx =
-        player.x + dx;
-
-    const ny =
-        player.y + dy;
+    const nx = player.x + dx;
+    const ny = player.y + dy;
 
     if(
-
-        maze[ny]
-
-        &&
-
+        maze[ny] &&
         maze[ny][nx] === 0
-
     ){
 
         player.x = nx;
-
         player.y = ny;
 
         drawMaze();
 
         checkWin();
-
     }
-
 }
+
+
 
 canvas.addEventListener(
     "touchstart",
@@ -444,6 +449,10 @@ function checkWin(){
 
 function unlockMemory(){
 
+    document
+.getElementById("controls")
+.style.display = "none";
+
     gameScreen.style.display = "none";
 
     memoryScreen.style.display = "flex";
@@ -497,3 +506,66 @@ document
     victoryScreen.style.display="flex";
 
 };
+
+document
+.getElementById("upBtn")
+.addEventListener(
+    "click",
+    ()=>moveDirection(0,-1)
+);
+
+document
+.getElementById("downBtn")
+.addEventListener(
+    "click",
+    ()=>moveDirection(0,1)
+);
+
+document
+.getElementById("leftBtn")
+.addEventListener(
+    "click",
+    ()=>moveDirection(-1,0)
+);
+
+document
+.getElementById("rightBtn")
+.addEventListener(
+    "click",
+    ()=>moveDirection(1,0)
+);
+
+const music =
+document.getElementById("bgMusic");
+
+const musicBtn =
+document.getElementById("musicBtn");
+
+let playing = false;
+
+musicBtn.addEventListener(
+    "click",
+    ()=>{
+
+        if(!playing){
+
+            music.play();
+
+            musicBtn.innerText =
+            "🔇 Pausar Música";
+
+            playing = true;
+
+        }else{
+
+            music.pause();
+
+            musicBtn.innerText =
+            "🎵 Tocar Música";
+
+            playing = false;
+
+        }
+
+    }
+);
