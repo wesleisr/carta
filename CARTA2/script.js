@@ -13,7 +13,7 @@ document.getElementById("finalScreen");
 const victoryScreen =
 document.getElementById("victoryScreen");
 
-let currentPhase = 14;
+let currentPhase = 1;
 
 let touchStartX = 0;
 let touchStartY = 0;
@@ -472,6 +472,10 @@ function getFarthestCells(){
 
 }
 function loadMaze(){
+
+    document
+    .getElementById("controls")
+    .style.display = "block";
 
     document.getElementById(
         "phaseInfo"
