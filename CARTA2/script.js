@@ -13,7 +13,7 @@ document.getElementById("finalScreen");
 const victoryScreen =
 document.getElementById("victoryScreen");
 
-let currentPhase = 15;
+let currentPhase = 1;
 
 let touchStartX = 0;
 let touchStartY = 0;
