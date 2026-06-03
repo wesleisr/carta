@@ -71,22 +71,6 @@
 
 </section>
 
-<!-- CARTA FINAL -->
-
-<section id="finalScreen">
-
-    <h1>💌 Carta Final</h1>
-
-    <p>
-        SUA CARTA VAI AQUI
-    </p>
-
-    <button id="finishBtn">
-        Fim!
-    </button>
-
-</section>
-
 <!-- CONQUISTA -->
 
 <section id="victoryScreen">
@@ -97,9 +81,31 @@
         Você encontrou todas as Chaves do Meu Coração ❤️
     </h2>
     
-    <button onclick="document.getElementById('bgMusic').play()">
-    🎵 Tocar Música
-</button>
+    <button id="musicBtn">
+        🎵 Tocar Música
+    </button>
+    <audio id="bgMusic" loop>
+        <source src="audio/musica.mp3" type="audio/mpeg">
+    </audio>
+    <button id="showLetterBtn">
+        💌 Ler Carta
+    </button>
+
+</section>
+
+<!-- CARTA FINAL -->
+
+<section id="finalScreen">
+
+    <h1>💌 Carta Final</h1>
+
+    <p>
+        SUA CARTA VAI AQUI
+    </p>
+
+    <button id="backToVictoryBtn">
+        🏆 Voltar
+    </button>
 
 </section>
 
@@ -111,6 +117,13 @@
     type="audio/mpeg">
 
 </audio>
+<audio id="keySound">
+    <source src="audio/key.wav" type="audio/wav">
+</audio>
 
+<audio id="unlockSound">
+    <source src="audio/unlock.wav" type="audio/wav">
+</audio>
+<div id="gameMessage"></div>
 </body>
 </html>
