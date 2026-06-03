@@ -13,7 +13,7 @@ document.getElementById("finalScreen");
 const victoryScreen =
 document.getElementById("victoryScreen");
 
-let currentPhase = 1;
+let currentPhase = 15;
 
 let touchStartX = 0;
 let touchStartY = 0;
@@ -150,9 +150,11 @@ let player = {
     y:1
 };
 
-let hearts = [];
+let key = null;
 
-let collectedHearts = 0;
+let door = null;
+
+let hasKey = false;
 
 function generateMaze(){
 
@@ -295,43 +297,58 @@ function drawMaze(){
 
     /* saída */
 
-    hearts.forEach(heart=>{
+    if(!hasKey){
 
-    if(!heart.collected){
+    ctx.font =
+    `${cell * 0.7}px Arial`;
 
-        ctx.font = `${cell * 0.65}px Arial`;
+    ctx.fillText(
 
-        ctx.fillText(
-            "🔑",
-            heart.x * cell + cell * 0.18,
-            heart.y * cell + cell * 0.78
-        );
+        "🔑",
 
-    }
+        key.x * cell +
+        cell * 0.15,
 
-});
+        key.y * cell +
+        cell * 0.8
+
+    );
+
+}
+
+ctx.font =
+`${cell * 0.7}px Arial`;
+
+ctx.fillText(
+
+    "[🚪]",
+
+    door.x * cell +
+    cell * 0.15,
+
+    door.y * cell +
+    cell * 0.8
+
+);
 
 
 
     /* jogador */
 
-    ctx.fillStyle = "red";
+    ctx.font =
+`${cell * 0.9}px Arial`;
 
-    ctx.beginPath();
+ctx.fillText(
 
-    ctx.arc(
+    "🧍‍♀️",
 
-        player.x*cell + cell/2,
-        player.y*cell + cell/2,
+    player.x * cell +
+    cell * 0.05,
 
-        cell/3,
+    player.y * cell +
+    cell * 0.85
 
-        0,
-        Math.PI*2
-
-    );
-
-    ctx.fill();
+);
 
 }
 function getRandomPathCellInArea(
@@ -497,33 +514,33 @@ function loadMaze(){
     const farthest =
     getFarthestCells();
 
-    hearts = [
+    const positions =
+getFarthestCells();
 
-        {
-            x:farthest[0].x,
-            y:farthest[0].y,
-            collected:false
-        },
+key = {
 
-        {
-            x:farthest[
-                Math.floor(
-                    farthest.length * 0.3
-                )
-            ].x,
+    x: positions[0].x,
+    y: positions[0].y
 
-            y:farthest[
-                Math.floor(
-                    farthest.length * 0.3
-                )
-            ].y,
+};
 
-            collected:false
-        }
+door = {
 
-    ];
+    x: positions[
+        Math.floor(
+            positions.length * 0.3
+        )
+    ].x,
 
-    collectedHearts = 0;
+    y: positions[
+        Math.floor(
+            positions.length * 0.3
+        )
+    ].y
+
+};
+
+hasKey = false;
 
     drawMaze();
 
@@ -651,31 +668,67 @@ function handleTouchEnd(event){
 
 function checkWin(){
 
-    hearts.forEach(heart => {
+    // PEGOU A CHAVE
 
-        if(
+    if(
 
-            !heart.collected &&
+        !hasKey &&
 
-            player.x === heart.x &&
+        player.x === key.x &&
 
-            player.y === heart.y
+        player.y === key.y
 
-        ){
+    ){
 
-            heart.collected = true;
+        hasKey = true;
 
-            collectedHearts++;
+        document
+        .getElementById("keySound")
+        .play();
+
+        showMessage(
+            "🗝️ Chave Encontrada!"
+        );
+
+        drawMaze();
+
+        return;
+
+    }
+
+    // ENCONTROU A PORTA
+
+    if(
+
+        player.x === door.x &&
+
+        player.y === door.y
+
+    ){
+
+        if(hasKey){
+
+            document
+            .getElementById("unlockSound")
+            .play();
+
+            showMessage(
+                "🔓 Memória Desbloqueada!"
+            );
+
+            setTimeout(()=>{
+
+                unlockMemory();
+
+            },1500);
+
+        }else{
+
+            showMessage(
+                "🚪 Encontre a chave primeiro!"
+            );
 
         }
-
-    });
-
-    drawMaze();
-
-    if(collectedHearts >= 2){
-
-        unlockMemory();
 
     }
 
@@ -686,6 +739,7 @@ function checkWin(){
 /* TESTE DE DESBLOQUEIO */
 
 function unlockMemory(){
+    
 
     document
 .getElementById("controls")
@@ -720,12 +774,12 @@ document
 
     if(currentPhase > 15){
 
-        memoryScreen.style.display="none";
+    memoryScreen.style.display="none";
 
-        finalScreen.style.display="flex";
+    victoryScreen.style.display="flex";
 
-        return;
-    }
+    return;
+}
 
     memoryScreen.style.display="none";
 
@@ -735,15 +789,6 @@ document
 
 };
 
-document
-.getElementById("finishBtn")
-.onclick = () => {
-
-    finalScreen.style.display="none";
-
-    victoryScreen.style.display="flex";
-
-};
 
 document
 .getElementById("upBtn")
@@ -773,37 +818,63 @@ document
     ()=>moveDirection(1,0)
 );
 
+
+document
+.getElementById("showLetterBtn")
+.onclick = () => {
+
+    victoryScreen.style.display = "none";
+
+    finalScreen.style.display = "flex";
+
+};
+document
+.getElementById("backToVictoryBtn")
+.onclick = () => {
+
+    finalScreen.style.display = "none";
+
+    victoryScreen.style.display = "flex";
+
+};
 const music =
 document.getElementById("bgMusic");
 
 const musicBtn =
 document.getElementById("musicBtn");
 
-let playing = false;
+musicBtn.onclick = () => {
 
-musicBtn.addEventListener(
-    "click",
-    ()=>{
+    if(music.paused){
 
-        if(!playing){
+        music.play();
 
-            music.play();
+        musicBtn.innerText =
+        "⏸️ Pausar Música";
 
-            musicBtn.innerText =
-            "🔇 Pausar Música";
+    }else{
 
-            playing = true;
+        music.pause();
 
-        }else{
-
-            music.pause();
-
-            musicBtn.innerText =
-            "🎵 Tocar Música";
-
-            playing = false;
-
-        }
+        musicBtn.innerText =
+        "🎵 Tocar Música";
 
     }
-);
+
+};
+function showMessage(text){
+
+    const msg =
+    document.getElementById("gameMessage");
+
+    msg.innerText = text;
+
+    msg.classList.add("show");
+
+    setTimeout(()=>{
+
+        msg.classList.remove("show");
+
+    },1200);
+
+}
