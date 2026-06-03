@@ -19,6 +19,7 @@ let touchStartX = 0;
 let touchStartY = 0;
 
 const SWIPE_MIN_DISTANCE = 30;
+const LIGHT_RADIUS = 3;
 
 /* MEMÓRIAS */
 
@@ -126,21 +127,14 @@ canvas.getContext("2d");
 let SIZE = 9;
 
 const mazeSizes = [
-9,
-11,
-13,
-15,
-17,
-19,
-21,
-23,
-25,
-27,
-29,
-31,
-33,
-35,
-35
+11, 11,
+13, 13,
+15, 15,
+17, 17,
+19, 19,
+21, 21,
+23, 23,
+25
 ];
 
 let maze = [];
@@ -257,6 +251,46 @@ function getRandomPathCell(){
     return {x,y};
 
 }
+function drawGlow(x,y,radius,color){
+
+    const gradient =
+    ctx.createRadialGradient(
+
+        x,
+        y,
+        0,
+
+        x,
+        y,
+        radius
+
+    );
+
+    gradient.addColorStop(
+        0,
+        color
+    );
+
+    gradient.addColorStop(
+        1,
+        "rgba(0,0,0,0)"
+    );
+
+    ctx.fillStyle = gradient;
+
+    ctx.beginPath();
+
+    ctx.arc(
+        x,
+        y,
+        radius,
+        0,
+        Math.PI * 2
+    );
+
+    ctx.fill();
+
+}
 function drawMaze(){
 
     canvas.width = 500;
@@ -302,6 +336,17 @@ function drawMaze(){
     ctx.font =
     `${cell * 0.7}px Arial`;
 
+    drawGlow(
+
+    key.x * cell + cell/2,
+
+    key.y * cell + cell/2,
+
+    cell * 6,
+
+    "rgba(255,255,100,0.8)"
+
+);
     ctx.fillText(
 
         "🔑",
@@ -319,6 +364,17 @@ function drawMaze(){
 ctx.font =
 `${cell * 0.7}px Arial`;
 
+drawGlow(
+
+    door.x * cell + cell/2,
+
+    door.y * cell + cell/2,
+
+    cell * 3.5,
+
+    "rgba(100,180,255,0.7)"
+
+);
 ctx.fillText(
 
     "[🚪]",
@@ -349,6 +405,53 @@ ctx.fillText(
     cell * 0.85
 
 );
+
+/* SOMBRA COM GRADIENTE */
+
+const lightX =
+player.x * cell + cell/2;
+
+const lightY =
+player.y * cell + cell/2;
+
+const darkness =
+ctx.createRadialGradient(
+
+    lightX,
+    lightY,
+    0,
+
+    lightX,
+    lightY,
+    cell * LIGHT_RADIUS
+
+);
+
+darkness.addColorStop(
+    0,
+    "rgba(0,0,0,0)"
+);
+
+darkness.addColorStop(
+    0.5,
+    "rgba(0,0,0,0.35)"
+);
+
+darkness.addColorStop(
+    1,
+    "rgba(0,0,0,0.96)"
+);
+
+ctx.fillStyle = darkness;
+
+ctx.fillRect(
+    0,
+    0,
+    canvas.width,
+    canvas.height
+);
+
+console.log("DESENHANDO ESCURIDÃO");
 
 }
 function getRandomPathCellInArea(
