@@ -14,12 +14,16 @@ const victoryScreen =
 document.getElementById("victoryScreen");
 
 let currentPhase = 1;
+let replayMode = false;
+let gameState = "start";
 
 let touchStartX = 0;
 let touchStartY = 0;
 
 const SWIPE_MIN_DISTANCE = 30;
 const LIGHT_RADIUS = 3;
+let metBoy = false;
+let boy = null;
 
 /* MEMÓRIAS */
 
@@ -108,9 +112,47 @@ document
 .getElementById("startBtn")
 .onclick = () => {
 
-    startScreen.style.display = "none";
+    loadSave();
 
-    gameScreen.style.display = "flex";
+    startScreen.style.display =
+    "none";
+
+    if(gameState === "victory"){
+
+        victoryScreen.style.display =
+        "flex";
+
+        return;
+
+    }
+
+    if(gameState === "letter"){
+
+        finalScreen.style.display =
+        "flex";
+
+        return;
+
+    }
+
+    if(gameState === "game"){
+
+        gameScreen.style.display =
+        "flex";
+
+        loadMaze();
+
+        return;
+
+    }
+
+
+    gameScreen.style.display =
+    "flex";
+
+    gameState = "game";
+
+    saveGame();
 
     loadMaze();
 
@@ -296,8 +338,18 @@ function drawMaze(){
     canvas.width = 500;
     canvas.height = 500;
 
+    const VIEW_SIZE = 11;
+
     const cell =
-    canvas.width / SIZE;
+    canvas.width / VIEW_SIZE;
+
+    const cameraX =
+    player.x -
+    Math.floor(VIEW_SIZE / 2);
+
+    const cameraY =
+    player.y -
+    Math.floor(VIEW_SIZE / 2);
 
     ctx.fillStyle = "black";
 
@@ -308,113 +360,170 @@ function drawMaze(){
         canvas.height
     );
 
-    for(let y=0;y<SIZE;y++){
+    /* PAREDES */
 
-        for(let x=0;x<SIZE;x++){
+    for(let y=0;y<VIEW_SIZE;y++){
 
-            if(maze[y][x] === 1){
+        for(let x=0;x<VIEW_SIZE;x++){
+
+            const worldX =
+            x + cameraX;
+
+            const worldY =
+            y + cameraY;
+
+            if(
+
+                maze[worldY] &&
+
+                maze[worldY][worldX] === 1
+
+            ){
 
                 ctx.fillStyle = "white";
 
                 ctx.fillRect(
 
-                    x*cell,
-                    y*cell,
+                    x * cell,
+
+                    y * cell,
+
                     cell,
+
                     cell
 
                 );
+
             }
+
         }
+
     }
 
+    /* POSIÇÕES NA TELA */
 
-    /* saída */
+    const keyScreenX =
+    (key.x - cameraX) * cell;
+
+    const keyScreenY =
+    (key.y - cameraY) * cell;
+
+    const doorScreenX =
+    (door.x - cameraX) * cell;
+
+    const doorScreenY =
+    (door.y - cameraY) * cell;
+
+    const playerScreenX =
+    Math.floor(VIEW_SIZE / 2) * cell;
+
+    const playerScreenY =
+    Math.floor(VIEW_SIZE / 2) * cell;
+
+    /* CHAVE */
 
     if(!hasKey){
+
+        drawGlow(
+
+            keyScreenX + cell/2,
+
+            keyScreenY + cell/2,
+
+            cell * 6,
+
+            "rgba(255,255,100,0.8)"
+
+        );
+
+        ctx.font =
+        `${cell * 0.7}px Arial`;
+
+        ctx.fillText(
+
+            "🔑",
+
+            keyScreenX +
+            cell * 0.15,
+
+            keyScreenY +
+            cell * 0.8
+
+        );
+
+    }
+
+    /* PORTA */
+
+    drawGlow(
+
+        doorScreenX + cell/2,
+
+        doorScreenY + cell/2,
+
+        cell * 3.5,
+
+        "rgba(100,180,255,0.7)"
+
+    );
 
     ctx.font =
     `${cell * 0.7}px Arial`;
 
-    drawGlow(
-
-    key.x * cell + cell/2,
-
-    key.y * cell + cell/2,
-
-    cell * 6,
-
-    "rgba(255,255,100,0.8)"
-
-);
     ctx.fillText(
 
-        "🔑",
+        "🚪",
 
-        key.x * cell +
+        doorScreenX +
         cell * 0.15,
 
-        key.y * cell +
+        doorScreenY +
         cell * 0.8
+
+    );
+    if(currentPhase === 15){
+
+    ctx.font =
+    `${cell * 0.9}px Arial`;
+
+    ctx.fillText(
+
+        "🧍‍♂️",
+
+        doorScreenX + cell * 0.9,
+
+        doorScreenY + cell * 0.8
 
     );
 
 }
 
-ctx.font =
-`${cell * 0.7}px Arial`;
-
-drawGlow(
-
-    door.x * cell + cell/2,
-
-    door.y * cell + cell/2,
-
-    cell * 3.5,
-
-    "rgba(100,180,255,0.7)"
-
-);
-ctx.fillText(
-
-    "[🚪]",
-
-    door.x * cell +
-    cell * 0.15,
-
-    door.y * cell +
-    cell * 0.8
-
-);
-
-
-
-    /* jogador */
+    /* JOGADOR */
 
     ctx.font =
-`${cell * 0.9}px Arial`;
+    `${cell * 0.9}px Arial`;
 
-ctx.fillText(
+    ctx.fillText(
 
-    "🧍‍♀️",
+        "🧍‍♀️",
 
-    player.x * cell +
-    cell * 0.05,
+        playerScreenX +
+        cell * 0.05,
 
-    player.y * cell +
-    cell * 0.85
+        playerScreenY +
+        cell * 0.85
 
-);
+    );
 
 /* SOMBRA COM GRADIENTE */
 
 const lightX =
-player.x * cell + cell/2;
+playerScreenX + cell/2;
 
 const lightY =
-player.y * cell + cell/2;
+playerScreenY + cell/2;
 
-const darkness =
+const gradient =
 ctx.createRadialGradient(
 
     lightX,
@@ -427,22 +536,22 @@ ctx.createRadialGradient(
 
 );
 
-darkness.addColorStop(
+gradient.addColorStop(
     0,
     "rgba(0,0,0,0)"
 );
 
-darkness.addColorStop(
-    0.5,
-    "rgba(0,0,0,0.35)"
+gradient.addColorStop(
+    0.6,
+    "rgba(0,0,0,0.4)"
 );
 
-darkness.addColorStop(
+gradient.addColorStop(
     1,
-    "rgba(0,0,0,0.96)"
+    "rgba(0,0,0,0.95)"
 );
 
-ctx.fillStyle = darkness;
+ctx.fillStyle = gradient;
 
 ctx.fillRect(
     0,
@@ -450,8 +559,6 @@ ctx.fillRect(
     canvas.width,
     canvas.height
 );
-
-console.log("DESENHANDO ESCURIDÃO");
 
 }
 function getRandomPathCellInArea(
@@ -591,7 +698,57 @@ function getFarthestCells(){
     return cells;
 
 }
+function getFreeCellNearDoor(){
+
+    const positions = [
+
+        {x: door.x + 1, y: door.y},
+        {x: door.x - 1, y: door.y},
+        {x: door.x, y: door.y + 1},
+        {x: door.x, y: door.y - 1}
+
+    ];
+
+    for(const pos of positions){
+
+        if(
+
+            maze[pos.y] &&
+
+            maze[pos.y][pos.x] === 0
+
+        ){
+
+            return pos;
+
+        }
+
+    }
+
+    return {
+
+        x: door.x,
+
+        y: door.y
+
+    };
+
+}
 function loadMaze(){
+
+    if(replayMode){
+
+    document
+    .getElementById("quitReplayBtn")
+    .style.display = "block";
+
+}else{
+
+    document
+    .getElementById("quitReplayBtn")
+    .style.display = "none";
+
+}
 
     document
     .getElementById("controls")
@@ -646,6 +803,8 @@ door = {
 hasKey = false;
 
     drawMaze();
+    metBoy = false;
+    boy = getFreeCellNearDoor();
 
 }
 
@@ -682,7 +841,7 @@ function moveDirection(dx,dy){
         player.y = ny;
 
         drawMaze();
-
+        
         checkWin();
     }
 }
@@ -771,6 +930,24 @@ function handleTouchEnd(event){
 
 function checkWin(){
 
+    if(
+
+    currentPhase === 15 &&
+
+    player.x === boy.x &&
+
+    player.y === boy.y
+
+){
+
+    metBoy = true;
+
+    showMessage(
+        "🧍‍♂️ ❤️ 🧍‍♀️"
+    );
+
+}
+
     // PEGOU A CHAVE
 
     if(
@@ -849,7 +1026,7 @@ function unlockMemory(){
 .style.display = "none";
 
     gameScreen.style.display = "none";
-
+    
     memoryScreen.style.display = "flex";
 
     document.getElementById(
@@ -866,6 +1043,7 @@ function unlockMemory(){
         "memoryText"
     ).innerText =
     memories[currentPhase-1].text;
+    saveGame();
 
 }
 
@@ -873,9 +1051,27 @@ document
 .getElementById("nextPhaseBtn")
 .onclick = () => {
 
+     if(replayMode){
+
+        memoryScreen.style.display =
+        "none";
+
+        victoryScreen.style.display =
+        "flex";
+
+        replayMode = false;
+
+        return;
+
+    }
+
     currentPhase++;
+    saveGame();
 
     if(currentPhase > 15){
+
+    gameState = "victory";
+    saveGame();
 
     memoryScreen.style.display="none";
 
@@ -926,6 +1122,9 @@ document
 .getElementById("showLetterBtn")
 .onclick = () => {
 
+    gameState = "letter";
+    saveGame();
+
     victoryScreen.style.display = "none";
 
     finalScreen.style.display = "flex";
@@ -935,9 +1134,50 @@ document
 .getElementById("backToVictoryBtn")
 .onclick = () => {
 
+    gameState = "victory";
+    saveGame();
+
     finalScreen.style.display = "none";
 
     victoryScreen.style.display = "flex";
+
+};
+
+document
+.querySelectorAll(".replayPhase")
+.forEach(btn => {
+
+    btn.onclick = () => {
+
+        currentPhase = parseInt(
+            btn.dataset.phase
+        );
+
+        replayMode = true;
+
+        victoryScreen.style.display =
+        "none";
+
+        gameScreen.style.display =
+        "flex";
+
+        loadMaze();
+
+    };
+
+});
+
+document
+.getElementById("quitReplayBtn")
+.onclick = () => {
+
+    gameScreen.style.display =
+    "none";
+
+    victoryScreen.style.display =
+    "flex";
+
+    replayMode = false;
 
 };
 const music =
@@ -981,3 +1221,57 @@ function showMessage(text){
     },1200);
 
 }
+function saveGame(){
+
+    const saveData = {
+
+        currentPhase,
+        replayMode,
+        gameState
+
+    };
+
+    localStorage.setItem(
+
+        "chavesDoCoracao",
+
+        JSON.stringify(saveData)
+
+    );
+
+}
+function loadSave(){
+
+    const saveData =
+    localStorage.getItem(
+        "chavesDoCoracao"
+    );
+
+    if(!saveData) return false;
+
+    const data =
+    JSON.parse(saveData);
+
+    currentPhase =
+    data.currentPhase || 1;
+
+    replayMode =
+    data.replayMode || false;
+
+    gameState =
+    data.gameState || "start";
+
+    return true;
+
+}
+document
+.getElementById("resetProgressBtn")
+.onclick = () => {
+
+    localStorage.removeItem(
+        "chavesDoCoracao"
+    );
+
+    location.reload();
+
+};
