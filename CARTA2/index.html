@@ -19,7 +19,7 @@
 
     <h1>❤️ Nossa Jornada ❤️</h1>
 
-    <h2>As Chaves do Coração</h2>
+    <!-- <h2>As Chaves do Coração</h2> -->
 
     <button id="startBtn">
         START GAME
@@ -34,6 +34,10 @@
     <div id="phaseInfo">
         FASE 1 / 15
     </div>
+    
+    <button id="quitReplayBtn" style="display:none;">
+        ⬅️ Voltar
+    </button>
 
     <canvas id="mazeCanvas"></canvas>
 
@@ -80,6 +84,30 @@
     <h2>
         Você encontrou todas as Chaves do Meu Coração ❤️
     </h2>
+
+    <h3>📖 Rever Memórias</h3>
+
+<div id="replayGrid">
+
+    <button class="replayPhase" data-phase="1">1</button>
+    <button class="replayPhase" data-phase="2">2</button>
+    <button class="replayPhase" data-phase="3">3</button>
+    <button class="replayPhase" data-phase="4">4</button>
+    <button class="replayPhase" data-phase="5">5</button>
+
+    <button class="replayPhase" data-phase="6">6</button>
+    <button class="replayPhase" data-phase="7">7</button>
+    <button class="replayPhase" data-phase="8">8</button>
+    <button class="replayPhase" data-phase="9">9</button>
+    <button class="replayPhase" data-phase="10">10</button>
+
+    <button class="replayPhase" data-phase="11">11</button>
+    <button class="replayPhase" data-phase="12">12</button>
+    <button class="replayPhase" data-phase="13">13</button>
+    <button class="replayPhase" data-phase="14">14</button>
+    <button class="replayPhase" data-phase="15">15</button>
+
+</div>
     
     <button id="musicBtn">
         🎵 Tocar Música
@@ -89,6 +117,10 @@
     </audio>
     <button id="showLetterBtn">
         💌 Ler Carta
+    </button>
+    <br>
+    <button id="resetProgressBtn">
+        🔄 Reiniciar Jornada
     </button>
 
 </section>
