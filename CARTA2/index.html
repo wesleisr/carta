@@ -84,8 +84,44 @@
     <h2>
         Você encontrou todas as Chaves do Meu Coração ❤️
     </h2>
+    <button id="musicBtn">
+        🎵 Tocar Música
+    </button>
+    <audio id="bgMusic" loop>
+        <source src="audio/musica.mp3" type="audio/mpeg">
+    </audio>
+    <button id="showLetterBtn">
+        💌 Ler Carta
+    </button>
+    <br>
 
-    <h3>📖 Rever Memórias</h3>
+<h3>📷 Álbum de Memórias</h3>
+
+<div id="memoryGallery">
+
+<button onclick="viewMemory(1)">❤️1</button>
+<button onclick="viewMemory(2)">❤️2</button>
+<button onclick="viewMemory(3)">❤️3</button>
+<button onclick="viewMemory(4)">❤️4</button>
+<button onclick="viewMemory(5)">❤️5</button>
+
+<button onclick="viewMemory(6)">❤️6</button>
+<button onclick="viewMemory(7)">❤️7</button>
+<button onclick="viewMemory(8)">❤️8</button>
+<button onclick="viewMemory(9)">❤️9</button>
+<button onclick="viewMemory(10)">❤️10</button>
+
+<button onclick="viewMemory(11)">❤️11</button>
+<button onclick="viewMemory(12)">❤️12</button>
+<button onclick="viewMemory(13)">❤️13</button>
+<button onclick="viewMemory(14)">❤️14</button>
+<button onclick="viewMemory(15)">❤️15</button>
+
+</div>
+
+<div id="replayGrid"></div>
+
+    <h3>🎮 Rejogar Fases</h3>
 
 <div id="replayGrid">
 
@@ -109,15 +145,7 @@
 
 </div>
     
-    <button id="musicBtn">
-        🎵 Tocar Música
-    </button>
-    <audio id="bgMusic" loop>
-        <source src="audio/musica.mp3" type="audio/mpeg">
-    </audio>
-    <button id="showLetterBtn">
-        💌 Ler Carta
-    </button>
+    
     <br>
     <button id="resetProgressBtn">
         🔄 Reiniciar Jornada
