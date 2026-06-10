@@ -17,6 +17,23 @@ let currentPhase = 1;
 let replayMode = false;
 let gameState = "start";
 
+const playerSprite = new Image();
+
+playerSprite.src =
+"sprites/player.png";
+
+
+let playerFrame = 1;
+
+let playerDirection = 0;
+
+/*
+0 = frente (baixo)
+1 = esquerda
+2 = direita
+3 = costas (cima)
+*/
+
 let touchStartX = 0;
 let touchStartY = 0;
 
@@ -500,20 +517,35 @@ function drawMaze(){
 
     /* JOGADOR */
 
-    ctx.font =
-    `${cell * 0.9}px Arial`;
+    /* JOGADOR */
 
-    ctx.fillText(
+const FRAME_WIDTH =
+playerSprite.width / 3;
 
-        "🧍‍♀️",
+const FRAME_HEIGHT =
+playerSprite.height / 4;
 
-        playerScreenX +
-        cell * 0.05,
+ctx.drawImage(
 
-        playerScreenY +
-        cell * 0.85
+    playerSprite,
 
-    );
+    playerFrame * FRAME_WIDTH,
+
+    playerDirection * FRAME_HEIGHT,
+
+    FRAME_WIDTH,
+
+    FRAME_HEIGHT,
+
+    playerScreenX,
+
+    playerScreenY,
+
+    cell,
+
+    cell
+
+);
 
 /* SOMBRA COM GRADIENTE */
 
@@ -829,6 +861,18 @@ document.addEventListener(
 
 function moveDirection(dx,dy){
 
+    if(dx === 1)
+    playerDirection = 2;
+
+if(dx === -1)
+    playerDirection = 1;
+
+if(dy === 1)
+    playerDirection = 0;
+
+if(dy === -1)
+    playerDirection = 3;
+
     const nx = player.x + dx;
     const ny = player.y + dy;
 
@@ -839,6 +883,11 @@ function moveDirection(dx,dy){
 
         player.x = nx;
         player.y = ny;
+
+        playerFrame++;
+
+if(playerFrame > 2)
+    playerFrame = 0;
 
         drawMaze();
         
@@ -1050,6 +1099,20 @@ function unlockMemory(){
 document
 .getElementById("nextPhaseBtn")
 .onclick = () => {
+
+    if(memoryViewMode){
+
+    memoryViewMode = false;
+
+    memoryScreen.style.display =
+    "none";
+
+    victoryScreen.style.display =
+    "flex";
+
+    return;
+
+}
 
      if(replayMode){
 
@@ -1264,6 +1327,38 @@ function loadSave(){
     return true;
 
 }
+
+let memoryViewMode = false;
+
+function viewMemory(phase){
+
+    memoryViewMode = true;
+
+    currentPhase = phase;
+
+    document
+    .getElementById("memoryPhoto")
+    .src =
+    `fotos/foto${phase}.jpg`;
+
+    document
+    .getElementById("memoryTitle")
+    .innerText =
+    memories[phase-1].title;
+
+    document
+    .getElementById("memoryText")
+    .innerText =
+    memories[phase-1].text;
+
+    victoryScreen.style.display =
+    "none";
+
+    memoryScreen.style.display =
+    "flex";
+
+}
+
 document
 .getElementById("resetProgressBtn")
 .onclick = () => {
