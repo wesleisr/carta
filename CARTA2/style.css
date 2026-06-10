@@ -289,3 +289,41 @@ button:hover{
     cursor:pointer;
 
 }
+#memoryGallery{
+
+    display:grid;
+
+    grid-template-columns:
+    repeat(5,1fr);
+
+    gap:10px;
+
+    margin:15px 0;
+
+}
+
+#memoryGallery button{
+
+    padding:10px;
+
+    font-size:18px;
+
+    border:none;
+
+    border-radius:10px;
+
+    background:#ff4f81;
+
+    color:white;
+
+    cursor:pointer;
+
+    transition:0.2s;
+
+}
+
+#memoryGallery button:hover{
+
+    transform:scale(1.08);
+
+}
